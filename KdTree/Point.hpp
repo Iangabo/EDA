@@ -1,4 +1,3 @@
-// Copyright
 #ifndef SRC_POINT_HPP_
 #define SRC_POINT_HPP_
 
@@ -102,4 +101,4 @@ bool operator!=(const Point<N>& one, const Point<N>& two) {
   return !(one == two);
 }
 
-#endif  // SRC_POINT_HPP_
+#endif 

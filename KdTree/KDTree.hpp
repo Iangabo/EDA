@@ -1,5 +1,3 @@
-// Copyright
-
 #ifndef SRC_KDTREE_HPP_
 #define SRC_KDTREE_HPP_
 
@@ -179,7 +177,6 @@ const ElemType &KDTree<N, ElemType>::at(const Point<N> &pt) const {
 template <size_t N, typename ElemType>
 
 ElemType KDTree<N, ElemType>::knn_value(const Point<N> &key, size_t k) const {
-  // TODO(me): Fill this in.
     KDTreeNode* it = root_;
     BoundedPQueue nearest_neighbors_candidates;
     int depth = 0;
@@ -206,7 +203,6 @@ ElemType KDTree<N, ElemType>::knn_value(const Point<N> &key, size_t k) const {
 template <size_t N, typename ElemType>
 std::vector<ElemType> KDTree<N, ElemType>::knn_query(const Point<N> &key,
                                                      size_t k) const {
-  // TODO(me): Fill this in.
   std::vector<ElemType> values;
   KDTreeNode* it = root_;
   BoundedPQueue nearest_neighbors_candidates;
@@ -282,7 +278,6 @@ typename KDTree<N, ElemType>::KDTReeNode* copiar(typename KDTree<N, ElemType>::K
     
     return newRoot;
 }
-// TODO(me): finish the implementation of the rest of the KDTree class
 
 template <size_t N, typename ElemType>
 std::vector<ElemType> KDTree<N, ElemType>::ortogonal_range_query(const std::vector<std::pair<double, double>>& ranges) const{
@@ -293,16 +288,14 @@ std::vector<ElemType> KDTree<N, ElemType>::ortogonal_range_query(const std::vect
     for (int i = 0; i < reanges.size()) {
         std::vector<ElemType> knn = knn_query(ranges[i]);
         for (int i = 0; i < knn.size(); i++) {
-            //Si esta dentro del rectangulo entonces añadelo a f
+            //Si esta dentro del rectangulo entonces aÃ±adelo a f
             if (in(knn, ranges)) {
                 f.push_back(knn[i]);
             }
         }
     }
-
-    //retorna f
     return f;
 
 }
 
-#endif  // SRC_KDTREE_HPP_
+#endif  

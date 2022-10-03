@@ -1,4 +1,4 @@
-// Copyright
+
 #include <cstdarg>
 #include <iomanip>
 #include <iostream>

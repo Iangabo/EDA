@@ -66,11 +66,19 @@ public:
         }
         return false;
     }
-
+    /*
     void remove(const Point& p) {
         points.erase(std::remove(points.begin(), points.end(), p), points.end());
         count--;
+    }*/
+    
+    void remove(const Point& p) {
+    auto it = std::remove(points.begin(), points.end(), p);
+    if (it != points.end()) {
+        points.erase(it, points.end());
+        count--;
     }
+}
 
     Point find_closest(const Point& p) const {
         double min_dist = std::numeric_limits<double>::max();

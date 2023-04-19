@@ -116,7 +116,7 @@ void draw_cube(const Point& p, const int& G, vtkSmartPointer<vtkRenderer> render
 }
 
 int main() {
-    int G = 10; // Granularidad
+    int G = 100; // Granularidad
     Cube cube(G);
 
     // Creamos el renderer y la ventana de renderizado

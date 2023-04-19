@@ -1,0 +1,150 @@
+#include <vtkSmartPointer.h>
+#include <vtkActor.h>
+#include <vtkCamera.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkCubeSource.h>
+#include <vtkPolyDataMapper.h>
+#include <cmath>
+#include <limits>
+#include <vector>
+#include <limits>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+
+class Point {
+public:
+    double x, y, z;
+
+    Point(double x = 0, double y = 0, double z = 0) : x(x), y(y), z(z) {}
+
+    double distance(const Point& other) const {
+        double dx = x - other.x;
+        double dy = y - other.y;
+        double dz = z - other.z;
+        return sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    bool operator==(const Point& other) const {
+        return x == other.x && y == other.y && z == other.z;
+    }
+};
+
+class Cube {
+private:
+    std::vector<Point> points;
+    int G;
+    int count = 0; // Contador de puntos
+
+public:
+    Cube(int G) : G(G) {}
+
+    void insert(const Point& p) {
+        if (count < G) {
+            if (!exist(p)) {
+                points.push_back(p);
+                count++;
+            }
+            else {
+                std::cerr << "El punto ya existe en el cubo" << std::endl;
+            }
+        }
+        else {
+            std::cerr << "El cubo ya está lleno" << std::endl;
+        }
+    }
+
+    bool exist(const Point& p) const {
+        for (const auto& point : points) {
+            if (point == p) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void remove(const Point& p) {
+        points.erase(std::remove(points.begin(), points.end(), p), points.end());
+        count--;
+    }
+
+    Point find_closest(const Point& p) const {
+        double min_dist = std::numeric_limits<double>::max();
+        Point closest;
+        for (const auto& point : points) {
+            double dist = point.distance(p);
+            if (dist < min_dist) {
+                min_dist = dist;
+                closest = point;
+            }
+        }
+        return closest;
+    }
+};
+
+void draw_cube(const Point& p, const int& G, vtkSmartPointer<vtkRenderer> renderer) {
+    double x = p.x;
+    double y = p.y;
+    double z = p.z;
+    double cube_size = 1.0 / G;
+
+    // Creamos la fuente del cubo
+    vtkSmartPointer<vtkCubeSource> cubeSource = vtkSmartPointer<vtkCubeSource>::New();
+    cubeSource->SetBounds(x, x + cube_size, y, y + cube_size, z, z + cube_size);
+
+    // Mapeamos los datos del cubo a los gráficos
+    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(cubeSource->GetOutputPort());
+
+    // Creamos el actor y lo agregamos al renderer
+    vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(mapper);
+    actor->GetProperty()->SetColor(0.8, 0.5, 0.2);
+    renderer->AddActor(actor);
+}
+
+int main() {
+    int G = 10; // Granularidad
+    Cube cube(G);
+
+    // Creamos el renderer y la ventana de renderizado
+    vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+    vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+    renderWindow->AddRenderer(renderer);
+    renderWindow->SetSize(800, 800);
+
+    // Creamos la interacción del usuario
+    vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    interactor->SetRenderWindow(renderWindow);
+
+    // Leyendo los puntos del archivo
+    std::ifstream infile("dama_octal.txt");
+    std::string line;
+    while (std::getline(infile, line)) {
+        std::istringstream iss(line);
+        double x, y, z;
+        if (!(iss >> x >> y >> z)) {
+            break;
+        }
+
+        // Crear un nuevo punto y agregarlo al cubo
+        Point p(x, y, z);
+        cube.insert(p);
+
+        // Dibujar el cubo
+        draw_cube(p, G, renderer);
+    }
+
+    // Establecemos la posición de la cámara y iniciamos el renderizado
+    renderer->ResetCamera();
+    vtkCamera* camera = renderer->GetActiveCamera();
+    camera->Zoom(1.5);
+    renderWindow->Render();
+    interactor->Start();
+
+    return 0;
+}
+

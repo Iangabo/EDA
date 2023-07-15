@@ -1,1 +1,0 @@
-Estructura que almacena puntos n dimesionales para buscar los K vecinos mas cercanos dado un dataset con mas de 30.000 puntos.
